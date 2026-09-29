@@ -17,16 +17,11 @@ The project collects system metrics from Linux servers and is designed to provid
 
 
 Linux Server
-     │
-     ▼
+     
   Python Agent
-     │
-     │ HTTP
-     ▼
+     
    FastAPI
-     │
- ┌───┼──────────────┐
- ▼   ▼              ▼
+     
 Redis MongoDB   ClickHouse
 
 ## Tech Stack
