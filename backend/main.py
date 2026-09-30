@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 from agent import collect_system_metrics
+from database.redis_client import redis_client
 
 class MemoryMetrics(BaseModel):
     total: int
@@ -44,3 +45,11 @@ def health():
 @app.get("/metrics")
 def metrics():
     return collect_system_metrics()
+
+@app.get("/redis-test")
+def redis_test():
+    redis_client.set("infra_watch_test", "ok")
+
+    return {
+        "redis": redis_client.get("infra_watch_test")
+    }

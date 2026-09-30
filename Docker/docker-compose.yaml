@@ -1,0 +1,20 @@
+services:
+  redis:
+    image: redis:latest
+    container_name: infra-watch-redis
+    ports:
+      - "6380:6379"
+
+ 
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: infra-watch-clickhouse
+    environment:
+      CLICKHOUSE_USER: infra
+      CLICKHOUSE_PASSWORD: infra_password
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+
+  
