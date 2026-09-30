@@ -1,9 +1,10 @@
 import time
 import logging
 import shutil
+import socket
 
-from pyparsing import line
 
+from datetime import timedelta
 
 logging.basicConfig(
     level=logging.INFO,
@@ -121,6 +122,8 @@ def collect_system_metrics():
     return {
         "memory": memory,
         "cpu_usage": cpu_usage,
+        "hostname": get_hostname(),
+        "uptime" : get_uptime(),
         "disk": disk,
         "network": {
             "rx_speed": rx,
@@ -128,15 +131,40 @@ def collect_system_metrics():
         },
     }
 
-metrics = collect_system_metrics()
+def calculate_network_usage():
+    rx_1, tx_1 = get_network_counters()
 
-logger.info("System metrics:")
-logger.info("  CPU:    %.2f%%", metrics["cpu_usage"])
-logger.info("  Memory: %.2f%%", metrics["memory"]["used_percent"])
-logger.info("  Disk:   %.2f%%", metrics["disk"]["used_percent"])
-logger.info(
-    "  Network: RX=%d bytes/s | TX=%d bytes/s",
-    metrics["network"]["rx_speed"],
-    metrics["network"]["tx_speed"],
-)
+    time.sleep(1)
+
+    rx_2, tx_2 = get_network_counters()# THe same way as we did with CPU Usage
+
+    rx_usage = (rx_2 - rx_1) / 1024 
+    tx_usage = (tx_2 - tx_1) / 1024
+
+    return rx_usage, tx_usage 
+
+def get_hostname():
+    return socket.gethostname()
+
+def get_uptime():
+    with open ("/proc/uptime", "r") as file:
+        uptime_seconds = float(file.readline().split()[0])
+
+    return timedelta(seconds=uptime_seconds)
+
+if __name__ == "__main__":
+    metrics = collect_system_metrics()
+
+    logger.info("System metrics:")
+    logger.info("  CPU:    %.2f%%", metrics["cpu_usage"])
+    logger.info("  Memory: %.2f%%", metrics["memory"]["used_percent"])
+    logger.info("  Disk:   %.2f%%", metrics["disk"]["used_percent"])
+    logger.info("  Hostname: %s", metrics["hostname"])
+    logger.info("  Uptime: %s", metrics["uptime"])
+    logger.info(
+        "  Network: RX = %.2f KB/s | TX = %.2f KB/s",
+        metrics["network"]["rx_speed"],
+        metrics["network"]["tx_speed"],
+    )
+
 
