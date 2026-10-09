@@ -24,7 +24,6 @@ Linux Server -> Python Agent -> FastAPI -> Redis & MongoDB & ClickHouse
 * Linux
 * FastAPI
 * Redis
-* MongoDB
 * ClickHouse
 * Docker
 * Kubernetes
