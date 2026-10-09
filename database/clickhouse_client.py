@@ -14,6 +14,7 @@ def get_clickhouse_client():
         port=int(os.getenv("CLICKHOUSE_PORT", "8124")),
         username=os.getenv("CLICKHOUSE_USER", "infra"),
         password=os.getenv("CLICKHOUSE_PASSWORD", ""),
+        autogenerate_session_id=False,     
     )
 
 def init_db():

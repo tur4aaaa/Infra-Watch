@@ -97,6 +97,9 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 def index():
     return FileResponse(FRONTEND_DIR / "index.html")
 
+@app.get("/server/{hostname}", include_in_schema=False)
+def server_page(hostname:str):
+    return FileResponse(FRONTEND_DIR / "server.html")
 
 @app.get("/health")
 def health():

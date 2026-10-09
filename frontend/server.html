@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Сервер · InfraWatch</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="logo"><span class="logo-mark"></span>InfraWatch</a>
+    <nav class="nav">
+      <a href="/" class="nav-link active">Серверы</a>
+    </nav>
+    <span class="updated" id="updated"></span>
+  </header>
+
+  <main class="page">
+    <a href="/" class="breadcrumb">← Все серверы</a>
+
+    <div class="page-head page-head-row">
+      <div>
+        <h1 class="page-title" id="hostname">—</h1>
+        <p class="page-sub"><span class="status" id="status">—</span></p>
+      </div>
+      <div class="tabs" id="periods">
+        <button class="tab active" data-minutes="60">1 час</button>
+        <button class="tab" data-minutes="1440">24 часа</button>
+        <button class="tab" data-minutes="10080">7 дней</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-label">CPU</div><div class="stat-value" id="stat-cpu">—</div></div>
+      <div class="stat"><div class="stat-label">Память</div><div class="stat-value" id="stat-mem">—</div></div>
+      <div class="stat"><div class="stat-label">Диск</div><div class="stat-value" id="stat-disk">—</div></div>
+      <div class="stat"><div class="stat-label">Последний контакт</div><div class="stat-value" id="stat-seen">—</div></div>
+    </div>
+
+    <p class="page-sub message" id="message"></p>
+
+    <div class="charts">
+      <section class="panel chart-panel">
+        <h2 class="chart-title">CPU, %</h2>
+        <div class="chart-box"><canvas id="chart-cpu"></canvas></div>
+      </section>
+      <section class="panel chart-panel">
+        <h2 class="chart-title">Память, %</h2>
+        <div class="chart-box"><canvas id="chart-mem"></canvas></div>
+      </section>
+      <section class="panel chart-panel">
+        <h2 class="chart-title">Диск, %</h2>
+        <div class="chart-box"><canvas id="chart-disk"></canvas></div>
+      </section>
+      <section class="panel chart-panel">
+        <h2 class="chart-title">Сеть</h2>
+        <div class="chart-box"><canvas id="chart-net"></canvas></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="/static/js/server.js"></script>
+</body>
+</html>
