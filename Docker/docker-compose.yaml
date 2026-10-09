@@ -15,3 +15,8 @@ services:
     ports:
       - "8124:8123"
       - "9001:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+volumes:
+  clickhouse_data:
