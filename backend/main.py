@@ -1,6 +1,10 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
+from pathlib import Path
+
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from clickhouse_connect.driver.exceptions import OperationalError
 
@@ -85,10 +89,13 @@ async def lifaspan(app: FastAPI):
 
 app = FastAPI(title="InfraWatch",lifespan=lifaspan)
 
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
-@app.get("/")
-def root():
-    return {"message": "InfraWatch is running"}
+
+@app.get("/", include_in_schema=False)
+def index():
+    return FileResponse(FRONTEND_DIR / "index.html")
 
 
 @app.get("/health")

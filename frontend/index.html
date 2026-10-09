@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Серверы · InfraWatch</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a href="/" class="logo"><span class="logo-mark"></span>InfraWatch</a>
+    <nav class="nav">
+      <a href="/" class="nav-link active">Серверы</a>
+    </nav>
+    <span class="updated" id="updated"></span>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <h1 class="page-title">Серверы</h1>
+      <p class="page-sub" id="summary">Загрузка…</p>
+    </div>
+
+    <div class="panel">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Статус</th>
+            <th>Сервер</th>
+            <th class="col-metric">CPU</th>
+            <th class="col-metric">Память</th>
+            <th class="col-metric">Диск</th>
+            <th class="col-seen">Последний контакт</th>
+          </tr>
+        </thead>
+        <tbody id="servers"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="/static/js/servers.js"></script>
+</body>
+</html>
