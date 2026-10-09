@@ -2,7 +2,11 @@ from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 
 
-from fastapi import FastAPI, HTTPException
+from clickhouse_connect.driver.exceptions import OperationalError
+
+
+from fastapi import FastAPI, HTTPException,Query
+from clickhouse_connect.driver.exceptions import OperationalError
 from pydantic import BaseModel
 
 from database.clickhouse_client import get_clickhouse_client, init_db
@@ -113,3 +117,64 @@ def redis_test():
         return {"redis": client.get("infra_watch_test")}
     except Exception as error:
         raise HTTPException(status_code=503, detail=f"Redis is unavailable: {error}")
+
+
+ONLINE_THRESHIOLD_SECONDS = 60 #If more that 60secs, the agent is considered offline
+@app.get("/servers")
+def list_servers():
+    try:
+        result = get_clickhouse_client().query("""
+        SELECT
+            hostname,
+            toUnixTimestamp(max(timestamp)) AS last_seen,
+            dateDiff('second', max(timestamp),now()) AS seconds_ago,
+            argMax(cpu_usage,timestamp)AS cpu_usage,
+            argMax(memory_used_percent,timestamp) AS memory_used_percent,
+            argMax(disk_used_percent,timestamp) AS disk_used_percent
+        FROM system_metrics
+        GROUP BY hostname
+        ORDER BY hostname
+        """)
+    except OperationalError as error:
+        raise HTTPException(status_code=503,detail=f"ClickHouse is unavailable: {error}")
+
+    servers = []
+    for row in result.named_results():
+        row["online"] = row["seconds_ago"] <= ONLINE_THRESHIOLD_SECONDS
+        servers.append(row)
+    return servers
+
+@app.get("/metrics/history")
+def metrics_history(
+    hostname: str,
+    minutes:int = Query(60, ge=1, le=7 * 24 * 60), #g = greater or equal, l = less or equal
+):
+    step = max(10,minutes * 60 // 300)
+
+    try:
+        result = get_clickhouse_client().query(
+            """
+            SELECT
+                toUnixTimestamp(toStartOfInterval(timestamp, toIntervalSecond({step:UInt32}))) AS ts,
+                round(avg(cpu_usage), 2)                AS cpu_usage,
+                round(avg(memory_used_percent), 2)      AS memory_used_percent,
+                round(avg(disk_used_percent), 2)        AS disk_used_percent,
+                round(avg(network_rx_bytes_per_sec))    AS rx_bytes_per_sec,
+                round(avg(network_tx_bytes_per_sec))    AS tx_bytes_per_sec
+            FROM system_metrics
+            WHERE hostname = {hostname:String} 
+              AND timestamp >= now() - toIntervalMinute({minutes:UInt32})
+            GROUP BY ts
+            ORDER BY ts
+            """,
+            parameters={"hostname": hostname, "step": step, "minutes": minutes},
+        )
+    except OperationalError as error:
+        raise HTTPException(status_code=503, detail=f"ClickHouse is unavailable: {error}")
+
+    return {
+        "hostname": hostname,
+        "minutes":minutes,
+        "step_seconds":step,
+        "points": list(result.named_results()),
+    }
