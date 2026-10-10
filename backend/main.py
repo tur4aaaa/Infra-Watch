@@ -130,21 +130,21 @@ def redis_test():
 
 
 ONLINE_THRESHIOLD_SECONDS = 60 #If more that 60secs, the agent is considered offline
-@app.get("/servers")
+@app.get("/servers") 
 def list_servers():
     try:
         result = get_clickhouse_client().query("""
         SELECT
             hostname,
             toUnixTimestamp(max(timestamp)) AS last_seen,
-            dateDiff('second', max(timestamp),now()) AS seconds_ago,
-            argMax(cpu_usage,timestamp)AS cpu_usage,
-            argMax(memory_used_percent,timestamp) AS memory_used_percent,
-            argMax(disk_used_percent,timestamp) AS disk_used_percent
+            dateDiff('second', max(timestamp),now()) AS seconds_ago, 
+            round(toFloat64(argMax(cpu_usage, timestamp)), 2)           AS cpu_usage,
+            round(toFloat64(argMax(memory_used_percent, timestamp)), 2) AS memory_used_percent,
+            round(toFloat64(argMax(disk_used_percent, timestamp)), 2)   AS disk_used_percent
         FROM system_metrics
         GROUP BY hostname
         ORDER BY hostname
-        """)
+        """) # we used round and tofload64 to avoid returning Decimal values, which are not JSON serializable
     except OperationalError as error:
         raise HTTPException(status_code=503,detail=f"ClickHouse is unavailable: {error}")
 

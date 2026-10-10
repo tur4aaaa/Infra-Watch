@@ -34,12 +34,6 @@ Chart.defaults.font.size = 11;
 
 let minutes = 60;
 
-function formatAgo(seconds) {
-  if (seconds < 60) return `${seconds} с назад`;
-  if (seconds < 3600) return `${Math.floor(seconds / 60)} мин назад`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)} ч назад`;
-  return `${Math.floor(seconds / 86400)} д назад`;
-}
 
 function formatBytes(bytes) {
   if (bytes < 1024) return `${Math.round(bytes)} B/s`;

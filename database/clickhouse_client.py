@@ -22,7 +22,7 @@ def init_db():
     client.command(
         """
         CREATE TABLE IF NOT EXISTS system_metrics (
-            hostname String,
+            hostname LowCardinality(String),
             timestamp DateTime,
             uptime_seconds UInt64,
             cpu_usage Float32,
@@ -38,6 +38,7 @@ def init_db():
             network_tx_bytes_per_sec UInt64
         ) ENGINE = MergeTree()
         ORDER BY (hostname, timestamp)
+        TTL timestamp + INTERVAL 30 DAY
         """
     )
 
