@@ -54,5 +54,6 @@ rows.addEventListener("click", (event) => {
   if (row) window.location.href = row.dataset.href;
 });
 
-loadServers();
-setInterval(loadServers, REFRESH_MS);
+
+loadServers();                        
+setInterval(loadServers, REFRESH_MS);   

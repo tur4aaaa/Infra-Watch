@@ -5,3 +5,4 @@ redis>=5.0
 clickhouse-connect>=0.7
 python-dotenv>=1.0
 python-dotenv>=1.0
+httpx>=0.27

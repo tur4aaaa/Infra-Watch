@@ -1,0 +1,58 @@
+services:
+  redis:
+    image: redis:7
+    container_name: infra-watch-redis
+    restart: unless-stopped
+    ports:
+      - "6380:6379"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    container_name: infra-watch-clickhouse
+    restart: unless-stopped
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-infra}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:?set CLICKHOUSE_PASSWORD in .env}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    ports:
+      - "8124:8123"
+      - "9001:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8123/ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  backend:
+    build: .
+    container_name: infra-watch-backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 8123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  agent:
+    build: .
+    container_name: infra-watch-agent
+    restart: unless-stopped
+    command: ["python", "-m", "agent.sender"]
+    network_mode: host
+    environment:
+      INFRAWATCH_BACKEND_URL: http://127.0.0.1:8000
+    depends_on:
+      - backend
+
+volumes:
+  clickhouse_data:
