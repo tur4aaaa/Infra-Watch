@@ -79,4 +79,14 @@ def test_network_only_selected_interfaces(monkeypatch):
         rx, tx = agent.get_network_counters()
 
     assert (rx, tx) == (5000, 3000)
+
     
+def test_memory_calculation():
+    fake_meminfo = """\
+MemTotal:       16000000 kB
+MemAvailable:   12000000 kB
+"""
+    with patch("builtins.open", mock_open(read_data=fake_meminfo)):
+        memory = agent.get_memory()        # real function call
+    assert memory["used_kb"] == 4_000_000
+    assert memory["used_percent"] == 25.0

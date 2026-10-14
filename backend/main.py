@@ -115,7 +115,7 @@ def receive_metrics(metrics: SystemMetrics):
     try:
         client = get_clickhouse_client()
         client.insert("system_metrics",[metrics_to_row(metrics)],column_names=COLUMNS)
-    except Exception as error: # If ClickHouse is unavailable, return a 503 Service Unavailable response
+    except OperationalError as error: # If ClickHouse is unavailable, return a 503 Service Unavailable response
         raise HTTPException(status_code=503, detail=f"ClickHouse is unavailable: {error}")
     return {"message": "Metrics received and stored successfully"}
 
