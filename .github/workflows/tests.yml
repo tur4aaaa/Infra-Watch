@@ -1,0 +1,25 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs_on: ubuntu-latest # turn on for every pull request and push to main branch
+
+    steps: #download code from repository
+      -name:Download code 
+      -uses:actions/checkout@v4  
+
+      -name: Set up Python
+      -uses:actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        cache: pip
+
+      -name: Install dependencies
+      -run: pip install -r requirements.txt
+
+      -name: Run tests
+      -rin:python -m pytest -v # run tests 
