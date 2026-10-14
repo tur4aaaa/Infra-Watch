@@ -1,5 +1,7 @@
 # InfraWatch
 
+![Tests](https://github.com/tur4aaaa/Infra-Watch/actions/workflows/tests.yml/badge.svg)
+
 Linux server monitoring system built with Python.
 
 The project collects system metrics from Linux servers and is designed to provide a centralized way to monitor infrastructure without manually connecting to each server.
