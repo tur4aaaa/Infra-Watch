@@ -6,20 +6,20 @@ on:
 
 jobs:
   test:
-    runs_on: ubuntu-latest # turn on for every pull request and push to main branch
+    runs-on: ubuntu-latest
 
-    steps: #download code from repository
-      -name:Download code 
-      -uses:actions/checkout@v4  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      -name: Set up Python
-      -uses:actions/setup-python@v5
-      with:
-        python-version: "3.13"
-        cache: pip
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
 
-      -name: Install dependencies
-      -run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
 
-      -name: Run tests
-      -rin:python -m pytest -v # run tests 
+      - name: Run tests
+        run: python -m pytest -v
