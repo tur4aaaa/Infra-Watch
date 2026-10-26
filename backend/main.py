@@ -17,6 +17,7 @@ from database.clickhouse_client import get_clickhouse_client, init_db
 from agent import collect_system_metrics
 from database.redis_client import get_redis_client
 
+from database.postgres import init_postges
 
 class MemoryMetrics(BaseModel):
     total_kb: int
@@ -84,6 +85,7 @@ def metrics_to_row(m: SystemMetrics) -> list:
 @asynccontextmanager
 async def lifaspan(app: FastAPI):
     init_db()
+    init_postges()
     yield
 
 
