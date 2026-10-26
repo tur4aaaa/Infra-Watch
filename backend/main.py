@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from database.clickhouse_client import get_clickhouse_client, init_db
 from agent import collect_system_metrics
 from database.redis_client import get_redis_client
+from backend.auth import router as auth_router
 
 from database.postgres import init_postgres
 
@@ -90,6 +91,7 @@ async def lifaspan(app: FastAPI):
 
 
 app = FastAPI(title="InfraWatch",lifespan=lifaspan)
+app.include_router(auth_router)
 
 FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
