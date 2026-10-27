@@ -1,5 +1,5 @@
 import secrets
-
+import os
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 
@@ -13,11 +13,13 @@ from sqlalchemy.orm import Session
 from database.postgres import User, get_session
 from database.redis_client import get_redis_client
 
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 hasher = PasswordHasher()
 session_cookie = "session"
 session_TTL = 7 * 24 * 3600  # 7 days in seconds
+cookie_secure = os.getenv("COOKIE_SECURE", "false").lower() == "true"
 
 # its a not valid hash in order to check it if there is no user(no time attacks)
 not_valid_hash = hasher.hash("not_valid_hash for timing")
@@ -81,7 +83,7 @@ def login(data: Credentials, response: Response, db: Session = Depends(get_sessi
         max_age=session_TTL,
         httponly=True,
         samesite="lax",
-        secure=False,
+        secure=cookie_secure,
     )
     return {"email": user.email}
 
