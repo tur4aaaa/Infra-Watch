@@ -4,7 +4,7 @@
 
 Linux server monitoring system built with Python.
 
-A lightweight agent collects system metrics on each server and sends them to a central backend, so you can monitor all your machines from one dashboard without connecting to each server manually.
+A lightweight agent collects system metrics on each server and sends them to a central backend, so you can monitor all your machines from one dashboard without connecting to each server manually...
 
 ## Features
 
